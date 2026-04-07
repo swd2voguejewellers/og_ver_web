@@ -1,0 +1,708 @@
+﻿@{
+    ViewBag.Title = "OG Verification";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<style>
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+
+    .card {
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+    }
+
+    .card-header {
+        background-color: #333 !important;
+        color: #fff !important;
+    }
+
+    /* Table dark mode */
+    .table {
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table th, .table td {
+        border: 1px solid #444;  /* dark grid lines */
+        vertical-align: middle;
+    }
+
+    .table thead {
+        background-color: #2c2c2c;
+        color: #fff;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: #232323; /* stripe effect */
+    }
+
+    .table tbody tr:hover {
+        background-color: #3a3a3a;
+    }
+
+    /* Inputs and selects */
+    .form-control, .form-select {
+        background-color: #2b2b2b;
+        color: #e0e0e0;
+        border: 1px solid #444;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background-color: #2b2b2b;
+        color: #fff;
+        border-color: #666;
+        box-shadow: none;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background-color: #0069d9;
+        border-color: #0062cc;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .btn-primary:hover, .btn-success:hover, .btn-danger:hover {
+        opacity: 0.85;
+    }
+
+    /* Totals */
+    #totWgt, #totVal, #avgRate {
+        color: #ffcc00;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- HEADER FORM -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label>OG Verify No</label>
+                    <input id="ogNo" type="number" class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <button id="btnLoad" class="btn btn-warning w-100">Load</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="card shadow-sm mb-3">
+        <div class="card-header fw-bold">
+            OG VERIFICATION
+        </div>
+
+        <div class="card-body">
+            <div class="row g-2">
+                
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label for="item">Item</label>
+                    <select id="item" class="form-select">
+                        <option value="">Select</option>
+                        <option value="Bangle">Bangle</option>
+                        <option value="Rings-Wedding (G)">Rings-Wedding (G)</option>
+                        <option value="Rings-Wedding (L)">Rings-Wedding (L)</option>
+                        <option value="Rings-Standard">Rings-Standard</option>
+                        <option value="Necklace">Necklace</option>
+                        <option value="Chain">Chain</option>
+                        <option value="Bracelet (G)">Bracelet (G)</option>
+                        <option value="Bracelet (L)">Bracelet (L)</option>
+                        <option value="Pendant">Pendant</option>
+                        <option value="Earstud">Earstud</option>
+                        <option value="B/B">B/B</option>
+                        <option value="S-Lock">S-Lock</option>
+                        <option value="Spring Lock">Spring Lock</option>
+                        <option value="Coin">Coin</option>
+                        <option value="Biscuit">Biscuit</option>
+                        <option value="Slab">Slab</option>
+                        <option value="Thalishment">Thalishment</option>
+                        <option value="Panchayuda">Panchayuda</option>
+                        <option value="Gold Pieces">Gold Pieces</option>
+                        <option value="Other Miscellaneous">Other Miscellaneous</option>
+                    </select>
+                </div>
+
+               <div class="col-12 col-sm-6 col-md-2">
+                    <label>Carat</label>
+                    <input id="carat" type="number" step="0.1" min="0" max="24" class="form-control" value="22" />
+               </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label>Weight</label>
+                    <input id="weight" type="number" class="form-control" />
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label>Actual Value</label>
+                    <input id="actVal" class="form-control bg-dark text-warning" readonly />
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label>Given Value</label>
+                    <input id="givVal" type="number" class="form-control" />
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label>Reason</label>
+                    <select id="reason" class="form-select">
+                        <option value="">Select</option>
+                        <option>Stones available</option>
+                        <option>Stocking item</option>
+                        <option>Vogue item</option>
+                        <option>Higher karatage</option>
+                        <option>Special price given</option>
+                        <option>Studded with diamonds</option>
+                        <option>Apperance of the item</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="mt-3 text-end">
+                <button id="btnAdd" class="btn btn-success">Add Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRID -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <!-- Make table horizontally scrollable -->
+            <div class="table-responsive">
+                <table class="table table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Item</th>
+                            <th>Carat</th>
+                            <th>Weight</th>
+                            <th>Act Value</th>
+                            <th>Given Value</th>
+                            <th>Reason</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="grid"></tbody>
+                </table>
+            </div>
+
+            <div class="row g-2 mt-2">
+                <div class="col-md-2">
+                    <label>Sales Person</label>
+                    <select id="Sales" class="form-select">
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label>Ass Sales Person</label>
+                    <select id="assSales" class="form-select">
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label>Price Given By</label>
+                    <select id="priceBy" class="form-select">
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-none" id="avgReasonDiv">
+                    <label>Avg Gold Rate Reason</label>
+                    <input id="avgReason" class="form-control" />
+                </div>
+
+            </div>
+
+            <div class="d-flex flex-wrap mt-3 fw-bold">
+                <div class="me-3 mb-2">Total Weight: <span id="totWgt">0.00</span></div>
+                <div class="me-3 mb-2">Total Value: <span id="totVal">0.00</span></div>
+                <div class="me-3 mb-2">Avg Rate: <span id="avgRate">0.00</span></div>
+            </div>
+
+            <div class="row mt-3" id="ratesDiv">
+                <div class="col-12">
+                    <div class="card p-2">
+                        <div class="fw-bold mb-2">Current Gold Rates</div>
+
+                        <div class="d-flex flex-wrap">
+                            <div class="me-3">24 KT: <span id="r24">0.00</span></div>
+                            <div class="me-3">22 KT: <span id="r22">0.00</span></div>
+                            <div class="me-3">21 KT: <span id="r21">0.00</span></div>
+                            <div class="me-3">20 KT: <span id="r20">0.00</span></div>
+                            <div class="me-3">19 KT: <span id="r19">0.00</span></div>
+                            <div class="me-3">18 KT: <span id="r18">0.00</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3 text-end">
+                <button id="btnSave" class="btn btn-primary">Save</button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let list = [];
+    let currentOGNo = 0;
+    let rates = null;
+
+    $(document).ready(function () {
+
+        $("#btnAdd").click(function () {
+            addRow();
+        });
+
+        $("#btnSave").click(function () {
+            saveData();
+        });
+
+        $('#weight, #carat').on('input', function () {
+            calculateActVal();
+        });
+
+        $("#btnLoad").click(function () {
+
+            let ogNo = parseInt($("#ogNo").val());
+
+            if (!ogNo || ogNo <= 0) {
+                alert("Enter valid OG No");
+                return;
+            }
+
+            $.ajax({
+                url: '/Home/GetOGDetails',
+                type: 'GET',
+                data: { ogVerifyNo: ogNo },
+                success: function (res) {
+                    console.log(res);
+
+                    list = [];
+
+                    // Check if staff info exists (take from first item if present)
+                    let firstItem = res[0] || {};
+                    let salesPerson = firstItem.salesPerson || "";
+                    let assSales = firstItem.assSalesPerson || "";
+                    let priceBy = firstItem.priceGivBy || "";
+                    let avgReason = firstItem.avgGRReason || "";
+                    let avgGoldRate = firstItem.avgGoldRate
+
+                    // Set dropdowns
+                    $("#Sales").val(salesPerson);
+                    $("#assSales").val(assSales);
+                    $("#priceBy").val(priceBy);
+                    $("#avgReason").val(avgReason);
+                    $("#avgRate").val(avgGoldRate);
+
+                    // Show avg reason field if value exists
+                    if (avgReason) {
+                        $("#avgReasonDiv").removeClass("d-none");
+                    } else {
+                        $("#avgReasonDiv").addClass("d-none");
+                    }
+
+                    // Fill table rows
+                    $.each(res, function (i, x) {
+                            list.push({
+                                Id: x.id, 
+
+                                Num: x.num,
+                                ItemDesc: x.itemDesc,
+                                Caratage: x.caratage,
+                                OGWgt: x.ogWgt,
+                                OGActVal: x.ogActVal,
+                                OGGivVal: x.ogGivVal,
+                                ReleaseReason: x.releaseReason,
+
+                                SalesPerson: x.salesPerson,
+                                AssSalesPerson: x.assSalesPerson,
+                                PriceGivBy: x.priceGivBy,
+                                AvgGRReason: x.avgGRReason,
+
+                                KT_24: x.kt_24,
+                                OG_22_KT: x.og_22_KT,
+                                OG_21_KT: x.og_21_KT,
+                                OG_20_KT: x.og_20_KT,
+                                OG_19_KT: x.og_19_KT,
+                                OG_18_KT: x.og_18_KT
+                            });
+                    });
+
+                    currentOGNo = ogNo;
+
+                    renderTable();
+                    calculateTotals();
+
+                },
+                error: function () {
+                    alert("No data found!");
+                }
+            });
+
+        });
+
+        loadStaff();
+        loadRates();
+
+    });
+
+    function calculateActVal() {
+        let weight = parseFloat($('#weight').val());
+        let carat = parseFloat($('#carat').val());
+
+        //  If missing → clear ActVal
+        if (!weight || !carat) {
+            $('#actVal').val('');
+            return;
+        }
+
+        $.ajax({
+            url: '/Home/CalculateActVal',
+            type: 'GET',
+            data: { weight: weight, carat: carat },
+            success: function (res) {
+                if (res === null) {
+                    $('#actVal').val('');
+                } else {
+                    $('#actVal').val(res.toFixed(2));
+                }
+            },
+            error: function () {
+                $('#actVal').val('');
+            }
+        });
+    }
+
+    function addRow() {
+
+        let item = $("#item").val();
+        let carat = parseFloat($("#carat").val()) || 0;
+        let weight = parseFloat($("#weight").val()) || 0;
+        let actVal = parseFloat($("#actVal").val()) || 0;
+        let givVal = parseFloat($("#givVal").val()) || 0;
+        let reason = $("#reason").val();
+
+        if (!item || !carat || carat <= 0 || weight <= 0) {
+            alert("Fill required fields!");
+            return;
+        }
+
+        // ✅ NEW VALIDATION
+        let upperLimit = actVal + 1000;
+        let lowerLimit = actVal - 2000;
+
+        if ((givVal > upperLimit || givVal < lowerLimit) && !reason) {
+            alert("Release Reason required");
+            $("#reason").focus();
+            return;
+        }
+
+        let obj = {
+            Id: 0, // ✅ NEW ROW
+
+            ItemDesc: item,
+            Caratage: `${parseFloat(carat) || 0} KT`,
+            OGWgt: weight,
+            OGActVal: actVal,
+            OGGivVal: givVal,
+            ReleaseReason: reason
+        };
+
+        list.push(obj);
+
+        renderTable();
+        calculateTotals();
+        clearInputs();
+    }
+
+     function renderTable() {
+
+        let html = "";
+
+        $.each(list, function (i, x) {
+            html += `<tr>
+                    <td>${i + 1}</td>
+
+                    <!-- HIDDEN ID -->
+                    <td style="display:none;">
+                        <input type="hidden" value="${x.Id || 0}" />
+                    </td>
+
+                    <!-- READ ONLY FIELDS -->
+                    <td>${x.ItemDesc}</td>
+                    <td>${x.Caratage}</td>
+                    <td>${x.OGWgt}</td>
+                    <td>${x.OGActVal}</td>
+
+                    <!-- ONLY EDITABLE FIELDS -->
+                    <td>
+                        <input type="number" value="${x.OGGivVal || 0}"
+                               onchange="updateField(${i}, 'OGGivVal', this.value)"
+                               class="form-control"/>
+                    </td>
+                    <td>
+                        <input value="${x.ReleaseReason || ''}"
+                               onchange="updateField(${i}, 'ReleaseReason', this.value)"
+                               class="form-control"/>
+                    </td>
+
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="removeRow(${i})">Delete</button>
+                    </td>
+                </tr>`;
+        });
+
+        $("#grid").html(html);
+    }
+
+    function removeRow(index) {
+        list.splice(index, 1);
+        renderTable();
+        calculateTotals();
+    }
+
+    function calculateTotals() {
+
+        let totWgt = 0;
+        let totVal = 0;
+
+        $.each(list, function (i, x) {
+            totWgt += x.OGWgt;
+            totVal += x.OGGivVal;
+        });
+
+        $("#totWgt").text(totWgt.toFixed(2));
+        $("#totVal").text(totVal.toFixed(2));
+
+        if (totWgt > 0) {
+            $("#avgRate").text(((totVal / totWgt) * 8).toFixed(2));
+        }
+    }
+
+    function clearInputs() {
+        $("#item, #weight, #actVal, #givVal, #reason").val('');
+        $("#carat").val('');
+    }
+
+    function saveData() {
+
+            // if (list.length === 0) {
+            //     alert("No data to save!");
+            //     return;
+            // }
+
+            let salesPerson = $("#Sales").val();   // ✅ FIXED ID
+            let assSales = $("#assSales").val();
+            let priceBy = $("#priceBy").val();
+            let avgReason = $("#avgReason").val();
+
+            let totWgt = parseFloat($("#totWgt").text()) || 0;
+            let totVal = parseFloat($("#totVal").text()) || 0;
+
+            let avgRate = 0;
+
+            if (totWgt > 0) {
+                avgRate = (totVal / totWgt) * 8;
+            }
+
+            // ✅ BASIC VALIDATION
+            if (!salesPerson) {
+                alert("Select Sales Person");
+                $("#Sales").focus();
+                return;
+            }
+
+            if (!assSales) {
+                alert("Select Assistant Sales");
+                $("#assSales").focus();
+                return;
+            }
+
+            if (!priceBy) {
+                alert("Select Price Given By");
+                $("#priceBy").focus();
+                return;
+            }
+
+            // ✅ CHECK AVG > 22KT RATE
+            let rate22 = rates?.oG_22_KT || 0;
+
+            if (avgRate > rate22) {
+
+                // SHOW FIELD
+                $("#avgReasonDiv").removeClass("d-none");
+
+                if (!avgReason) {
+                    alert("Avg Rate is higher than 22KT rate. Please enter reason!");
+                    $("#avgReason").focus();
+                    return;
+                }
+            } else {
+                // HIDE FIELD
+                $("#avgReasonDiv").addClass("d-none");
+            }
+
+            
+
+            // ✅ Attach to each item
+            let updatedList = list.map((x, index) => ({
+                    ...x,
+
+                    Id: x.Id || 0,     // ✅ IMPORTANT
+                    Num: index + 1,
+
+                    SalesPerson: salesPerson,
+                    AssSalesPerson: assSales,
+                    PriceGivBy: priceBy,
+                    AvgGRReason: avgReason,
+                    AvgGoldRate : avgRate,
+
+                    KT_24: rates.kt_24,
+                    OG_22_KT: rates.oG_22_KT,
+                    OG_21_KT: rates.oG_21_KT,
+                    OG_20_KT: rates.oG_20_KT,
+                    OG_19_KT: rates.oG_19_KT,
+                    OG_18_KT: rates.oG_18_KT
+                }));
+
+            let payload = {
+                ogVerifyNo: currentOGNo === 0 ? null : currentOGNo,
+                details: updatedList   // ✅ IMPORTANT FIX
+            };
+            
+            for (let i = 0; i < list.length; i++) {
+
+                let x = list[i];
+
+                let upperLimit = x.OGActVal + 1000;
+                let lowerLimit = x.OGActVal - 2000;
+
+                if ((x.OGGivVal > upperLimit || x.OGGivVal < lowerLimit) && !x.ReleaseReason) {
+                    alert(`Row ${i + 1}: Release Reason required`);
+                    return;
+                }
+            }
+
+            $.ajax({
+                url: '/Home/SaveOrUpdateOG',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function (res) {
+
+                        if (res.success) {
+                        alert("Saved! OG No: " + res.message);
+
+                        currentOGNo = res.message;
+                        $("#ogNo").val(res.message);
+
+                        // ✅ CLEAR EVERYTHING AFTER SAVE
+                        list = [];
+                        renderTable();
+
+                        // Clear inputs
+                        $("#item").val('');
+                        $("#carat").val(22); // reset default
+                        $("#weight").val('');
+                        $("#actVal").val('');
+                        $("#givVal").val('');
+                        $("#reason").val('');
+
+                        // Clear totals
+                        $("#totWgt").text('0.00');
+                        $("#totVal").text('0.00');
+                        $("#avgRate").text('0.00');
+
+                        // Hide avg reason
+                        $("#avgReason").val('');
+                        $("#avgReasonDiv").addClass("d-none");
+
+                        // OPTIONAL: reset dropdowns
+                        $("#Sales").val('');
+                        $("#assSales").val('');
+                        $("#priceBy").val('');
+                    }
+                },
+                error: function () {
+                    alert("Error saving!");
+                }
+            });
+     }
+
+    function updateField(index, field, value) {
+
+        if (field === "OGWgt" || field === "OGGivVal") {
+            value = parseFloat(value) || 0;
+        }
+
+        list[index][field] = value;
+
+        calculateTotals();
+    }
+
+    function loadStaff() {
+
+        $.get('/Home/GetStaff', function (res) {
+
+            $("#Sales, #assSales, #priceBy").empty();
+
+            $("#Sales").append(`<option value="">Select</option>`);
+            $("#assSales").append(`<option value="">Select</option>`);
+            $("#priceBy").append(`<option value="">Select</option>`);
+
+            $.each(res, function (i, name) {
+                $("#Sales").append(`<option value="${name}">${name}</option>`);
+                $("#assSales").append(`<option value="${name}">${name}</option>`);
+                $("#priceBy").append(`<option value="${name}">${name}</option>`);
+            });
+
+        });
+    }
+
+    function loadRates() {
+
+        $.get('/Home/GetLatestRates', function (res) {
+
+            rates = res;
+
+            console.log("Rates loaded:", rates);
+
+            if (!rates) return;
+
+            // ✅ SHOW IN UI
+            $("#r24").text((rates.kT_24 || 0).toFixed(2));
+            $("#r22").text((rates.oG_22_KT || 0).toFixed(2));
+            $("#r21").text((rates.oG_21_KT || 0).toFixed(2));
+            $("#r20").text((rates.oG_20_KT || 0).toFixed(2));
+            $("#r19").text((rates.oG_19_KT || 0).toFixed(2));
+            $("#r18").text((rates.oG_18_KT || 0).toFixed(2));
+
+        }).fail(function () {
+            alert("Failed to load rates!");
+        });
+    }
+</script>

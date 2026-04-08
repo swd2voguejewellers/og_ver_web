@@ -115,7 +115,7 @@
             <div class="row g-2">
                 
 
-                <div class="col-12 col-sm-6 col-md-2">
+                <div class="col-6 col-md-4 col-lg-2">
                     <label for="item">Item</label>
                     <select id="item" class="form-select">
                         <option value="">Select</option>
@@ -142,27 +142,27 @@
                     </select>
                 </div>
 
-               <div class="col-12 col-sm-6 col-md-2">
+               <div class="col-6 col-md-4 col-lg-2">
                     <label>Carat</label>
                     <input id="carat" type="number" step="0.1" min="0" max="24" class="form-control" value="22" />
                </div>
 
-                <div class="col-12 col-sm-6 col-md-2">
+                <div class="col-6 col-md-4 col-lg-2">
                     <label>Weight</label>
                     <input id="weight" type="number" class="form-control" />
                 </div>
 
-                <div class="col-12 col-sm-6 col-md-2">
+                <div class="col-6 col-md-4 col-lg-2">
                     <label>Actual Value</label>
                     <input id="actVal" class="form-control bg-dark text-warning" readonly />
                 </div>
 
-                <div class="col-12 col-sm-6 col-md-2">
+                <div class="col-6 col-md-4 col-lg-2">
                     <label>Given Value</label>
                     <input id="givVal" type="number" class="form-control" />
                 </div>
 
-                <div class="col-12 col-sm-6 col-md-2">
+                <div class="col-6 col-md-4 col-lg-2">
                     <label>Reason</label>
                     <select id="reason" class="form-select">
                         <option value="">Select</option>
@@ -209,49 +209,47 @@
             </div>
 
             <div class="row g-2 mt-2">
-                <div class="col-md-2">
+
+                <div class="col-6 col-md-3">
                     <label>Sales Person</label>
-                    <select id="Sales" class="form-select">
-                    </select>
+                    <select id="Sales" class="form-select"></select>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-6 col-md-3">
                     <label>Ass Sales Person</label>
-                    <select id="assSales" class="form-select">
-                    </select>
+                    <select id="assSales" class="form-select"></select>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-6 col-md-3">
                     <label>Price Given By</label>
-                    <select id="priceBy" class="form-select">
-                    </select>
+                    <select id="priceBy" class="form-select"></select>
                 </div>
 
-                <div class="col-md-3 d-none" id="avgReasonDiv">
+                <div class="col-12 col-md-3 d-none" id="avgReasonDiv">
                     <label>Avg Gold Rate Reason</label>
                     <input id="avgReason" class="form-control" />
                 </div>
 
-            </div>
+           </div>
 
-            <div class="d-flex flex-wrap mt-3 fw-bold">
-                <div class="me-3 mb-2">Total Weight: <span id="totWgt">0.00</span></div>
-                <div class="me-3 mb-2">Total Value: <span id="totVal">0.00</span></div>
-                <div class="me-3 mb-2">Avg Rate: <span id="avgRate">0.00</span></div>
-            </div>
+           <div class="row mt-3 fw-bold text-center text-md-start">
+                <div class="col-12 col-md-4">Total Weight: <span id="totWgt">0.00</span></div>
+                <div class="col-12 col-md-4">Total Value: <span id="totVal">0.00</span></div>
+                <div class="col-12 col-md-4">Avg Rate: <span id="avgRate">0.00</span></div>
+           </div>
 
             <div class="row mt-3" id="ratesDiv">
                 <div class="col-12">
                     <div class="card p-2">
-                        <div class="fw-bold mb-2">Current Gold Rates</div>
+                        <div class="fw-bold mb-2">Current OG Rates</div>
 
                         <div class="d-flex flex-wrap">
                             <div class="me-3">24 KT: <span id="r24">0.00</span></div>
-                            <div class="me-3">22 KT: <span id="r22">0.00</span></div>
-                            <div class="me-3">21 KT: <span id="r21">0.00</span></div>
-                            <div class="me-3">20 KT: <span id="r20">0.00</span></div>
-                            <div class="me-3">19 KT: <span id="r19">0.00</span></div>
-                            <div class="me-3">18 KT: <span id="r18">0.00</span></div>
+                            <div class="me-3">OG 22 KT: <span id="r22">0.00</span></div>
+                            <div class="me-3">OG 21 KT: <span id="r21">0.00</span></div>
+                            <div class="me-3">OG 20 KT: <span id="r20">0.00</span></div>
+                            <div class="me-3">OG 19 KT: <span id="r19">0.00</span></div>
+                            <div class="me-3">OG 18 KT: <span id="r18">0.00</span></div>
                         </div>
                     </div>
                 </div>

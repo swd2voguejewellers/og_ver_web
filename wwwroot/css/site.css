@@ -2,10 +2,31 @@ html {
   font-size: 14px;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+@media (max-width: 992px) {
+
+    .table {
+        font-size: 13px;
+    }
+
+        .table input {
+            min-width: 90px;
+        }
+
+        .table th, .table td {
+            padding: 6px;
+        }
+}
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 992px) {
+    .form-control, .form-select {
+        height: 45px;
+        font-size: 15px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {

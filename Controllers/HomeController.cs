@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestSPA.Interfaces;
 using TestSPA.Models;
@@ -6,6 +8,7 @@ using TestSPA.ViewModel;
 
 namespace TestSPA.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IOGRepository _OGRepository;
@@ -27,11 +30,36 @@ namespace TestSPA.Controllers
             if (model == null || model.Details == null || !model.Details.Any())
                 return BadRequest("No verification details provided.");
 
+            if (model.OGVerifyNo.HasValue && await _OGRepository.IsApprovedAsync(model.OGVerifyNo.Value))
+                return Conflict(new { success = false, message = "Approved records cannot be edited." });
+
             var result = await _OGRepository.SaveOrUpdateAsync(model);
             if (result.success)
                 return Ok(new { success = true, message = result.ogVerifyNo.ToString() });
             else
                 return StatusCode(500, new { success = false, message = "Save failed." });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ApproveOG([FromBody] OGVerificationVM model)
+        {
+            if (!string.Equals(User.FindFirstValue("user_type"), "MGR", StringComparison.OrdinalIgnoreCase))
+                return Forbid();
+
+            if (model == null || model.Details == null || !model.Details.Any())
+                return BadRequest("No verification details provided.");
+
+            if (model.OGVerifyNo.HasValue && await _OGRepository.IsApprovedAsync(model.OGVerifyNo.Value))
+                return Conflict(new { success = false, message = "Approved records cannot be edited." });
+
+            if (model.OGVerifyNo.HasValue && !await _OGRepository.CanApproveBranchAsync(model.OGVerifyNo.Value))
+                return StatusCode(403, new { success = false, message = "You cannot approve records from another branch." });
+
+            var result = await _OGRepository.ApproveAsync(model);
+            if (result.success)
+                return Ok(new { success = true, message = result.ogVerifyNo.ToString() });
+
+            return StatusCode(500, new { success = false, message = "Approval failed." });
         }
 
         [HttpGet]
@@ -53,7 +81,8 @@ namespace TestSPA.Controllers
             if (details == null || !details.Any())
                 return NotFound();
 
-            return Ok(details);
+            var isApproved = await _OGRepository.IsApprovedAsync(ogVerifyNo);
+            return Ok(new { details, isApproved });
         }
 
         [HttpGet]

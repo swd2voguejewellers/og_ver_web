@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
         public int? OGVerifyNo { get; set; }
-        public List<OGVerification> Details { get; set; }
+        public List<OGVerification> Details { get; set; } = new();
     }
 }

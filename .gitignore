@@ -1,6 +1,7 @@
 # Build Folders
 bin/
 obj/
+build_verify/
 
 # User-Specific Files
 .vs/

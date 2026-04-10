@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using TestSPA.Interfaces;
 using TestSPA.Models;
 using TestSPA.ViewModel;
+using System.Linq;
 
 namespace TestSPA.Controllers
 {
@@ -83,6 +84,47 @@ namespace TestSPA.Controllers
 
             var isApproved = await _OGRepository.IsApprovedAsync(ogVerifyNo);
             return Ok(new { details, isApproved });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PrintOG(int ogVerifyNo)
+        {
+            if (ogVerifyNo <= 0)
+            {
+                return BadRequest("Invalid verification number.");
+            }
+
+            var details = await _OGRepository.GetOGVerificationsByNumberAsync(ogVerifyNo);
+            if (details == null || details.Count == 0)
+            {
+                return NotFound();
+            }
+
+            var head = details[0];
+
+            var vm = new OGVerificationPrintVM
+            {
+                OGVerifyNo = ogVerifyNo,
+                OGVerifyDate = head.OGVerifyDate,
+                ReceiptNo = head.ReceiptNo,
+                SalesPerson = head.SalesPerson,
+                AssSalesPerson = head.AssSalesPerson,
+                PriceGivBy = head.PriceGivBy,
+                KT_24 = head.KT_24,
+                OG_22_KT = head.OG_22_KT,
+                OG_21_KT = head.OG_21_KT,
+                OG_20_KT = head.OG_20_KT,
+                OG_19_KT = head.OG_19_KT,
+                OG_18_KT = head.OG_18_KT,
+                AvgGoldRate = head.AvgGoldRate,
+                AvgGRReason = head.AvgGRReason,
+                Details = details,
+                TotalWeight = Math.Round(details.Sum(x => x.OGWgt ?? 0), 2),
+                TotalActValue = Math.Round(details.Sum(x => x.OGActVal ?? 0), 2),
+                TotalGivValue = Math.Round(details.Sum(x => x.OGGivVal ?? 0), 2)
+            };
+
+            return View("PrintOG", vm);
         }
 
         [HttpGet]

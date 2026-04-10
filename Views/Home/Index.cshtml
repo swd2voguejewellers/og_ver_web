@@ -140,6 +140,44 @@
         box-shadow: 0 0 0 0.2rem rgba(247, 184, 75, 0.14);
     }
 
+    .og-searchselect {
+        position: relative;
+    }
+
+    .og-searchselect-dropdown {
+        position: relative;
+        z-index: 40;
+        margin-top: 6px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(8, 13, 22, 0.98);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.40);
+        max-height: 260px;
+        overflow: auto;
+        padding: 6px;
+        display: none;
+    }
+
+    .og-searchselect-item {
+        padding: 10px 12px;
+        border-radius: 12px;
+        color: var(--og-text);
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .og-searchselect-item:hover,
+    .og-searchselect-item[aria-selected="true"] {
+        background: rgba(247, 184, 75, 0.14);
+        border: 1px solid rgba(247, 184, 75, 0.20);
+    }
+
+    .og-searchselect-muted {
+        color: var(--og-muted);
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+
     .og-readonly {
         color: #111827;
         font-weight: 700;
@@ -401,6 +439,9 @@
                 <div class="col-12 col-md-6 col-lg-2">
                     <button id="btnLoad" class="btn og-btn og-btn-load w-100">Load Record</button>
                 </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                    <button id="btnPrint" class="btn og-btn btn-outline-light w-100">Print</button>
+                </div>
             </div>
         </section>
 
@@ -479,21 +520,6 @@
             </div>
         </section>
 
-        <div class="og-summary-grid">
-            <div class="og-stat">
-                <div class="og-stat-label">Total Weight</div>
-                <div class="og-stat-value" id="totWgt">0.00</div>
-            </div>
-            <div class="og-stat">
-                <div class="og-stat-label">Total Value</div>
-                <div class="og-stat-value" id="totVal">0.00</div>
-            </div>
-            <div class="og-stat">
-                <div class="og-stat-label">Average Rate</div>
-                <div class="og-stat-value" id="avgRate">0.00</div>
-            </div>
-        </div>
-
         <section class="og-panel">
             <div class="og-section-head">
                 <div>
@@ -521,6 +547,21 @@
                 </div>
             </div>
         </section>
+
+        <div class="og-summary-grid">
+            <div class="og-stat">
+                <div class="og-stat-label">Total Weight</div>
+                <div class="og-stat-value" id="totWgt">0.00</div>
+            </div>
+            <div class="og-stat">
+                <div class="og-stat-label">Total Value</div>
+                <div class="og-stat-value" id="totVal">0.00</div>
+            </div>
+            <div class="og-stat">
+                <div class="og-stat-label">Average Rate</div>
+                <div class="og-stat-value" id="avgRate">0.00</div>
+            </div>
+        </div>
 
         <section class="og-panel">
             <div class="og-section-head">
@@ -718,6 +759,17 @@
                 }
             });
 
+        });
+
+        $("#btnPrint").click(function () {
+            let ogNo = parseInt($("#ogNo").val());
+
+            if (!ogNo || ogNo <= 0) {
+                alert("Enter valid OG No");
+                return;
+            }
+
+            window.open(appUrl('/Home/PrintOG') + '?ogVerifyNo=' + encodeURIComponent(ogNo), '_blank', 'noopener,noreferrer');
         });
 
         loadStaff();
@@ -955,7 +1007,7 @@
                     AvgGRReason: avgReason,
                     AvgGoldRate : avgRate,
 
-                    KT_24: rates.kt_24,
+                    KT_24: rates.kT_24,
                     OG_22_KT: rates.oG_22_KT,
                     OG_21_KT: rates.oG_21_KT,
                     OG_20_KT: rates.oG_20_KT,
@@ -1081,6 +1133,10 @@
                 $("#priceBy").append(`<option value="${name}">${name}</option>`);
             });
 
+            enhanceSearchableSelect("#Sales");
+            enhanceSearchableSelect("#assSales");
+            enhanceSearchableSelect("#priceBy");
+
         });
     }
 
@@ -1104,6 +1160,131 @@
 
         }).fail(function () {
             alert("Failed to load rates!");
+        });
+    }
+
+    function enhanceSearchableSelect(selectSelector) {
+        const $select = $(selectSelector);
+        if ($select.length === 0) return;
+
+        const enhancedKey = "og_searchselect_enhanced";
+        if ($select.data(enhancedKey)) {
+            rebuildSearchableSelectOptions($select);
+            syncSearchableSelectInput($select);
+            return;
+        }
+
+        $select.data(enhancedKey, true);
+
+        const ns = `.ogss_${($select.attr("id") || "select")}`;
+
+        const $wrap = $('<div class="og-searchselect"></div>');
+        const $input = $('<input type="text" class="form-control og-input" autocomplete="off" placeholder="Search..." />');
+        const $dropdown = $('<div class="og-searchselect-dropdown" role="listbox"></div>');
+
+        $select.after($wrap);
+        $wrap.append($input, $dropdown);
+        $select.hide();
+
+        $select.on("change", function () {
+            syncSearchableSelectInput($select);
+        });
+
+        $input.on("focus click", function () {
+            openSearchableSelect($select);
+        });
+
+        $input.on("input", function () {
+            filterSearchableSelect($select, $input.val() || "");
+        });
+
+        $(document).off("click" + ns).on("click" + ns, function (e) {
+            if ($(e.target).closest($wrap).length === 0) {
+                closeSearchableSelect($select);
+            }
+        });
+
+        rebuildSearchableSelectOptions($select);
+        syncSearchableSelectInput($select);
+    }
+
+    function rebuildSearchableSelectOptions($select) {
+        const $wrap = $select.next(".og-searchselect");
+        const $dropdown = $wrap.find(".og-searchselect-dropdown");
+        $dropdown.empty();
+
+        const options = $select.find("option").map(function () {
+            return { value: $(this).attr("value") ?? "", text: $(this).text() ?? "" };
+        }).get();
+
+        if (options.length === 0) {
+            $dropdown.append('<div class="og-searchselect-muted">No options</div>');
+            return;
+        }
+
+        for (const opt of options) {
+            const safeValue = opt.value ?? "";
+            const safeText = opt.text ?? "";
+
+            const $item = $('<div class="og-searchselect-item" role="option"></div>');
+            $item.text(safeText);
+            $item.attr("data-value", safeValue);
+
+            $item.on("click", function () {
+                $select.val(safeValue).trigger("change");
+                closeSearchableSelect($select);
+            });
+
+            $dropdown.append($item);
+        }
+    }
+
+    function syncSearchableSelectInput($select) {
+        const $wrap = $select.next(".og-searchselect");
+        const $input = $wrap.find("input");
+
+        const val = $select.val();
+        const text = $select.find("option:selected").text();
+        $input.val(val ? text : "");
+    }
+
+    function openSearchableSelect($select) {
+        const $wrap = $select.next(".og-searchselect");
+        const $dropdown = $wrap.find(".og-searchselect-dropdown");
+        $dropdown.show();
+        filterSearchableSelect($select, $wrap.find("input").val() || "");
+    }
+
+    function closeSearchableSelect($select) {
+        const $wrap = $select.next(".og-searchselect");
+        $wrap.find(".og-searchselect-dropdown").hide();
+    }
+
+    function filterSearchableSelect($select, query) {
+        const q = (query || "").toString().trim().toLowerCase();
+        const $wrap = $select.next(".og-searchselect");
+        const $dropdown = $wrap.find(".og-searchselect-dropdown");
+        const $items = $dropdown.find(".og-searchselect-item");
+
+        let visibleCount = 0;
+        $items.each(function () {
+            const text = ($(this).text() || "").toLowerCase();
+            const ok = !q || text.includes(q);
+            $(this).toggle(ok);
+            if (ok) visibleCount++;
+        });
+
+        $dropdown.find(".og-searchselect-muted").remove();
+        if (visibleCount === 0) {
+            $dropdown.append('<div class="og-searchselect-muted">No matches</div>');
+        }
+
+        // highlight current selection (if visible)
+        const current = ($select.val() ?? "").toString();
+        $items.attr("aria-selected", "false").each(function () {
+            if (current && ($(this).attr("data-value") ?? "") === current) {
+                $(this).attr("aria-selected", "true");
+            }
         });
     }
 </script>

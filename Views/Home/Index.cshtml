@@ -705,10 +705,21 @@
                     let avgReason = firstItem.avgGRReason || "";
                     let avgGoldRate = firstItem.avgGoldRate
 
+                    // Ensure selected names exist as options (in case staff list is loaded later/different)
+                    if (salesPerson && $("#Sales option").filter(function () { return $(this).val() === salesPerson; }).length === 0) {
+                        $("#Sales").append(`<option value="${salesPerson}">${salesPerson}</option>`);
+                    }
+                    if (assSales && $("#assSales option").filter(function () { return $(this).val() === assSales; }).length === 0) {
+                        $("#assSales").append(`<option value="${assSales}">${assSales}</option>`);
+                    }
+                    if (priceBy && $("#priceBy option").filter(function () { return $(this).val() === priceBy; }).length === 0) {
+                        $("#priceBy").append(`<option value="${priceBy}">${priceBy}</option>`);
+                    }
+
                     // Set dropdowns
-                    $("#Sales").val(salesPerson);
-                    $("#assSales").val(assSales);
-                    $("#priceBy").val(priceBy);
+                    $("#Sales").val(salesPerson).trigger("change");
+                    $("#assSales").val(assSales).trigger("change");
+                    $("#priceBy").val(priceBy).trigger("change");
                     $("#avgReason").val(avgReason);
                     const avgGoldRateValue = Number(avgGoldRate ?? 0);
                     $("#avgRate").text(avgGoldRateValue.toFixed(2));
@@ -1121,6 +1132,11 @@
 
         $.get(appUrl('/Home/GetStaff'), function (res) {
 
+            // preserve selected values (e.g., when loading an existing OG record)
+            const prevSales = $("#Sales").val();
+            const prevAssSales = $("#assSales").val();
+            const prevPriceBy = $("#priceBy").val();
+
             $("#Sales, #assSales, #priceBy").empty();
 
             $("#Sales").append(`<option value="">Select</option>`);
@@ -1132,6 +1148,11 @@
                 $("#assSales").append(`<option value="${name}">${name}</option>`);
                 $("#priceBy").append(`<option value="${name}">${name}</option>`);
             });
+
+            // restore (if the value still exists in the new option list)
+            if (prevSales) $("#Sales").val(prevSales).trigger("change");
+            if (prevAssSales) $("#assSales").val(prevAssSales).trigger("change");
+            if (prevPriceBy) $("#priceBy").val(prevPriceBy).trigger("change");
 
             enhanceSearchableSelect("#Sales");
             enhanceSearchableSelect("#assSales");
